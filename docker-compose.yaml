@@ -20,7 +20,7 @@ services:
     ports:
       - "80:80"
     extra_hosts:
-      - "servidor:192.168.10.10"
+      - "localhost:192.168.10.10"
     networks:
       lan:
         ipv4_address: 192.168.10.20
