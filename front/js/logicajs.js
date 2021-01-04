@@ -1,50 +1,95 @@
 var usuarios = [];
-
-function G_llenarArreglo(){
-    usuarios = [
-        {
-            nombre: "David",
-            edad: "23",
-            anio: 1997
+const urlServ = "http://192.168.10.10:3000";
+//const urlServ = "http://35.193.124.239:3000";
+function G_llenarArreglo() {
+    $.ajax({
+        url: urlServ+"/serv",
+        type: "GET",
+        success: function (data) {
+            usuarios = data;
+            pintarDatosInit()
         },
-        {
-            nombre: "Jonathan",
-            edad: "18",
-            anio: 2002
-        },
-        {
-            nombre: "Gabriela",
-            edad: "21",
-            anio: 1999
-        },
-        {
-            nombre: "Piter",
-            edad: "15",
-            anio: 2005
+        error: function (err) {
+            alert("Error");
+            console.log(err);
         }
-    ];
+    });
 
     return usuarios.length;
 }
 
-function getColor(edad) { return "primary" }
-//function getColor(edad) { return edad < 20 ? "danger" : "success" }
+//function getColor(edad) { return "primary" }
+function getColor(edad) { return edad < 20 ? "danger" : "success" }
 
 
-function guardar(nom, edad, anio) {
-    if(!validarEdad(edad)){ return "Error edad incorrecta: "+edad;}
-    if(!validarAnio(anio)){ return "Error año incorrecto: "+anio;}
+function guardar() {
+    var nom = $("#nombre").val();
+    var edad = $("#edad").val();
+    var anio = $("#anio").val();
+    
 
-    //${usuarios[i].edad < 20 ? "danger" : "success"}
-    var codHTML = `
+    if (!validarEdad(edad)) { return "Error edad incorrecta: " + edad; }
+    if (!validarAnio(anio)) { return "Error año incorrecto: " + anio; }
+
+    var usuario = {
+        nombre: nom,
+        edad: edad,
+        anio: anio
+    };
+
+    $.ajax({
+        url: urlServ+"/serv",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(usuario),
+        success: function (data) {
+            if(data.status==200){
+                alert(data.msg);
+                G_llenarArreglo()
+            }else{
+                alert("Error al insertar:" +data.msg);
+                G_llenarArreglo()
+            }
+        },
+        error: function (err) {
+            alert("Error fatal");
+            console.log(err);
+        }
+    });
+}
+
+function validarEdad(edad) {
+    if ((/[1-9]+/g).test(edad)) {
+        return true;
+    }
+
+    return false;
+}
+
+function validarAnio(anio) {
+    if ((/[1-9][1-9][1-9][1-9]/).test(anio)) {
+        return true;
+    }
+
+    return false;
+}
+
+
+
+
+function pintarDatosInit() {
+    $("#misTarjetas").empty();
+
+    for (let i = 0; i < usuarios.length; i++) {
+        $("#misTarjetas").append(`
         <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-${getColor(edad)} shadow h-100 py-2">
+            <div class="card border-left-${getColor(usuarios[i].edad)} shadow h-100 py-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">Nombre: ${nom}</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">Edad: ${edad}</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">Año: ${anio}</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">Nombre: ${usuarios[i].nombre}</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">Edad: ${usuarios[i].edad}</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">Año: ${usuarios[i].anio}</div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-calendar fa-2x text-gray-300"></i>
@@ -53,28 +98,11 @@ function guardar(nom, edad, anio) {
                 </div>
             </div>
         </div>
-    `;
-
-    return codHTML;
-}
-
-function validarEdad(edad){
-    if( (/[1-9]+/g).test(edad) ){
-        return true;
+        `);
     }
-
-    return false;
 }
 
-function validarAnio(anio){
-    if( (/[1-9][1-9][1-9][1-9]/).test(anio) ){
-        return true;
-    }
-
-    return false;
-}
-
-
-exports.validarEdad = validarEdad;
-exports.validarAnio = validarAnio;
-exports.guardar = guardar;
+$(document).ready(function () {
+    G_llenarArreglo();
+    pintarDatosInit();
+});
