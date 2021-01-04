@@ -1,19 +1,26 @@
 var usuarios = [];
-const urlServ = "http://localhost:3000";
-//const urlServ = "http://35.193.124.239:3000";
+//const urlServ = "http://localhost:3000";
+const urlServ = "http://35.193.124.239:3000";
 function G_llenarArreglo() {
-    $.ajax({
-        url: urlServ+"/serv",
-        type: "GET",
-        success: function (data) {
-            usuarios = data;
-            pintarDatosInit()
-        },
-        error: function (err) {
-            alert("Error");
-            console.log(err);
-        }
-    });
+    // $.ajax({
+    //     url: urlServ+"/serv",
+    //     type: "GET",
+    //     success: function (data) {
+    //         usuarios = data;
+    //         pintarDatosInit()
+    //     },
+    //     error: function (err) {
+    //         alert("Error");
+    //         console.log(err);
+    //     }
+    // });
+
+    fetch(urlServ+'/serv')
+        .then(response => response.json())
+        .then((data) => {
+            usuarios=data;
+            pintarDatosInit();
+        }).catch(err => console.log(err));
 
     return usuarios.length;
 }
@@ -26,7 +33,7 @@ function guardar() {
     var nom = $("#nombre").val();
     var edad = $("#edad").val();
     var anio = $("#anio").val();
-    
+
 
     if (!validarEdad(edad)) { return "Error edad incorrecta: " + edad; }
     if (!validarAnio(anio)) { return "Error año incorrecto: " + anio; }
@@ -38,16 +45,16 @@ function guardar() {
     };
 
     $.ajax({
-        url: urlServ+"/serv",
+        url: urlServ + "/serv",
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify(usuario),
         success: function (data) {
-            if(data.status==200){
+            if (data.status == 200) {
                 alert(data.msg);
                 G_llenarArreglo()
-            }else{
-                alert("Error al insertar:" +data.msg);
+            } else {
+                alert("Error al insertar:" + data.msg);
                 G_llenarArreglo()
             }
         },
