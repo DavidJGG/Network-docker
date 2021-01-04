@@ -1,6 +1,6 @@
 var usuarios = [];
-//const urlServ = "http://localhost:3000";
-const urlServ = "http://35.193.124.239:3000";
+const urlServ = "http://localhost:3000";
+//const urlServ = "http://35.193.124.239:3000";
 function G_llenarArreglo() {
     // $.ajax({
     //     url: urlServ+"/serv",
