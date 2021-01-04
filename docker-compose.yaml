@@ -1,0 +1,31 @@
+version: "3.1"
+services:
+  cnt-servidor:
+    container_name: cnt-servidor
+    build:
+      dockerfile: DockerFile
+      context: ./back 
+    ports:
+      - "3000:3000"
+    networks:
+      lan:
+        ipv4_address: 192.168.10.10
+    environment:
+      - PORT=3000
+  cnt-web:
+    container_name: cnt-web
+    build:
+      dockerfile: DockerFile
+      context: ./front
+    ports:
+      - "80:80"
+    networks:
+      lan:
+        ipv4_address: 192.168.10.20
+
+networks:
+    lan:
+        driver: bridge
+        ipam:
+            config:
+                - subnet: 192.168.10.0/24
